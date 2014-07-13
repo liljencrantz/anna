@@ -141,9 +141,8 @@ Hello, world!
 	    the text «Hello, world!» on the screen:
 	  </p>
 	  <pre class="anna-code">
-def main()
-{
-    print("Hello, world!");
+def main() {
+    print("Hello, world!")
 }
 	  </pre>
 	  <p>
@@ -178,28 +177,27 @@ def main()
 	    Our next example is a program that holds a simple conversation with the user:
 	  </p>
 	  <pre class="anna-code">
-def main()
-{
-    print("What is your name?");
+def main() {
+    print("What is your name?")
     // The readLine.readLine function reads one line of input from the keyboard and 
     // returns it as a text String
 
     // Use the := symbol to declare a new variable.
-    userName := readLine.readLine("> ");
+    userName := readLine.readLine("> ")
 
     // And now that the userName variable has a value, we can use it. 
     // For example, we can print it!
-    print("Hello,", userName);
-    print("How old are you?");
+    print("Hello,", userName)
+    print("How old are you?")
    
     // The Int::convert function converts it's input into an integer number.
     // What does the '::' thing mean? Don't worry about that right now, we'll 
     // get to it later...
-    userAge := Int::convert(readLine.readLine("> "));
+    userAge := Int::convert(readLine.readLine("> "))
 
     print(
         "Wow, that means you've been alive for more than", 
-        userAge*365*24*60*60, "seconds. That's a lot of time...");
+        userAge*365*24*60*60, "seconds. That's a lot of time...")
 }
 	  </pre>
 	  <p>
@@ -210,12 +208,12 @@ def main()
 	    access the value of a variable by writing out it's
 	    name. For example, the
 	    line <code class="anna-code">userName :=
-	    readLine.readLine("> ");</code> declares a new variable
+	    readLine.readLine("> ")</code> declares a new variable
 	    named <code>userName</code>, and assigns it an initial
 	    value by reading a line of input from the keyboard. A few
 	    lines later, the
 	    code <code class="anna-code">print("Hello,",
-	    userName);</code> will print whatever the user entered on
+	    userName)</code> will print whatever the user entered on
 	    the keyboard back onto the screen.
 	  </p>
 	  <p>
@@ -256,11 +254,10 @@ def main()
 	      <h3>Suggested answer for exercise 2 b</h3>
 
 	      <pre class="anna-code">
-def main()
-{
-    print("Hello, how much do you weigh in kilograms?");
-    weight := Float::convert(readLine.readLine("Weight: "));
-    print("Thanks. Did you know that's", weight / 0.4535, "pounds?");
+def main() {
+    print("Hello, how much do you weigh in kilograms?")
+    weight := Float::convert(readLine.readLine("Weight: "))
+    print("Thanks. Did you know that's", weight / 0.4535, "pounds?")
 }
 	      </pre>
 
@@ -272,34 +269,28 @@ def main()
 	    Our next example shows you how to conditionally do things, as well as how to repeat stuff.
 	  </p>
 	  <pre class="anna-code">
-def main()
-{
-    print("What is your name?");
-    userName := readLine.readLine("> ");
+def main() {
+    print("What is your name?")
+    userName := readLine.readLine("> ")
     // Give a special greeting to people with lovely names
-    if(userName == "Anna")
-    {
-        print("Wow, what a pretty name. Lovely to meet you, Anna!");
-    }
-    else
-    {
-        print("Hi,", userName);
+    if(userName == "Anna") {
+        print("Wow, what a pretty name. Lovely to meet you, Anna!")
+    } else {
+        print("Hi,", userName)
     }
 
-    print("Pick a number. Any number.");
+    print("Pick a number. Any number.")
     // Repeat the same piece of code while a condition is met
     // In this case, we read a new number from the keyboard until we encounter 
     // the number seven.
-    while(Int::convert(readLine.readLine("> ")) != 7)
-    {
-        print("No no no. Bad number. Pick something else.");
+    while(Int::convert(readLine.readLine("> ")) != 7) {
+        print("No no no. Bad number. Pick something else.")
     }
-    print("Seven! I knew it! I knew it all along!");
+    print("Seven! I knew it! I knew it all along!")
 
     // Loop over the vakues 0 (inclusive) to 10 (exclusive)
-    (0..10).each(index)
-    {
-        print("This is number", index+1);
+    (0..10).each(index) {
+        print("This is number", index+1)
     }
 }
 	  </pre>
@@ -322,33 +313,25 @@ def main()
               <span class='anna-code-popup-close'>X</span>
               <h3>99 bottles of beer</h3>
 	  <pre class="anna-code">
-def main()
-{
-    (99..0).each(bottles)
-    {
-        suffix := "";
-        if(bottles &gt; 1)
-        {
-            print(bottles, "bottles of beer on the wall,", bottles, "bottles of beer.");
-            if(bottles &gt; 2)
-            {
-                suffix = "" ~ (bottles-1) ~ " bottles of beer on the wall.";
+def main() {
+    (99..0).each(bottles) {
+        suffix := ""
+        if(bottles &gt; 1) {
+            print(bottles, "bottles of beer on the wall,", bottles, "bottles of beer.")
+            if(bottles &gt; 2) {
+                suffix = "" ~ (bottles-1) ~ " bottles of beer on the wall."
+            } else {
+                suffix = "1 bottle of beer on the wall."
             }
-            else
-            {
-                suffix = "1 bottle of beer on the wall.";
-            }
-        }
-        else
-        {
-            print("1 bottle of beer on the wall, 1 bottle of beer.");
+        } else {
+            print("1 bottle of beer on the wall, 1 bottle of beer.")
             suffix = "no more beer on the wall!"
         }
-        print("Take one down, pass it around,", suffix);
+        print("Take one down, pass it around,", suffix)
         print("--")
     }
     print("No more bottles of beer on the wall, no more bottles of beer.
-Go to the store and buy some more, 99 bottles of beer on the wall.");
+Go to the store and buy some more, 99 bottles of beer on the wall.")
 }
 </pre>
 	    </div>
@@ -360,10 +343,9 @@ Go to the store and buy some more, 99 bottles of beer on the wall.");
 	    Our next example shows you how to create and use lists of other things.
 	  </p>
 	  <pre class="anna-code">
-def main()
-{
-    myList := [1, 2, 7];
-    print(myList);
+def main() {
+    myList := [1, 2, 7]
+    print(myList)
 }
 </pre>
 	<p>
@@ -396,7 +378,7 @@ def main()
 	      <tr>
 		<td>
 		  <code class="anna-code">
-		    myList[0];
+		    myList[0]
 		  </code>
 		</td>
 		<td>
@@ -409,7 +391,7 @@ def main()
 	      <tr>
 		<td>
 		  <code class="anna-code">
-		    myList[-1];
+		    myList[-1]
 		  </code>
 		</td>
 		<td>
@@ -422,7 +404,7 @@ def main()
 	      <tr>
 		<td>
 		  <code class="anna-code">
-		    myList[0] = 7;
+		    myList[0] = 7
 		  </code>
 		</td>
 		<td>
@@ -435,7 +417,7 @@ def main()
 	      <tr>
 		<td>
 		  <code class="anna-code">
-		    myList.count;
+		    myList.count
 		  </code>
 		</td>
 		<td>
@@ -448,7 +430,7 @@ def main()
 	      <tr>
 		<td>
 		  <code class="anna-code">
-		    myList.push(666);
+		    myList.push(666)
 		  </code>
 		</td>
 		<td>
@@ -461,7 +443,7 @@ def main()
 	      <tr>
 		<td>
 		  <code class="anna-code">
-		    myList.pop();
+		    myList.pop()
 		  </code>
 		</td>
 		<td>
@@ -571,23 +553,21 @@ help(1) // Like the above, this will also show a help text on how to use the Int
 	  </p>
 	  
 	  <pre class="anna-code">
-myUserId := unix.user.getuid();
-myGroupId := unix.user.getgid();
-if(myGroupId in listOfReallyCoolGroups)
-{
-    unix.user.setuid(reallyCoolUser);
+myUserId := unix.user.getuid()
+myGroupId := unix.user.getgid()
+if(myGroupId in listOfReallyCoolGroups) {
+    unix.user.setuid(reallyCoolUser)
 }
 	  </pre>
 	  <p>
 	    Note how many times we had to type unix.user in the above code. We can do better:
 	  </p>
 	  <pre class="anna-code">
-use(unix.user);
-myUserId := getuid();
-myGroupId := getgid();
-if(myGroupId in listOfReallyCoolGroups)
-{
-    setuid(reallyCoolUser);
+use(unix.user)
+myUserId := getuid()
+myGroupId := getgid()
+if(myGroupId in listOfReallyCoolGroups) {
+    setuid(reallyCoolUser)
 }
 	  </pre>
 	  <p>
@@ -604,8 +584,8 @@ if(myGroupId in listOfReallyCoolGroups)
 	    modules. Let's try!
 	  </p>
 	  <pre class="anna-code">
-use([1, 2, 3]);
-print(count);  // Prints the count of elements in the list, which is 3
+use([1, 2, 3])
+print(count)  // Prints the count of elements in the list, which is 3
 	  </pre>
 	  <p>
 	    Yes! We can use the <code>use</code> clause to save
@@ -631,7 +611,7 @@ print
 	    e.g. <code>lang.print</code>. How come? You may already
 	    suspect the answer - a use clause. This is correct. The
 	    Anna compiler will implicitly insert
-	    <code>use(lang);</code> at the top of every module it
+	    <code>use(lang)</code> at the top of every module it
 	    compiles. When using the interactive command line, the
 	    replTool module is also
 	    automatically <code>use</code>:ed. This module is where
@@ -664,10 +644,10 @@ print
 	  <pre class="anna-code">
 // Declare two variables, someVariable and anotherVariable, to hold the values 
 // 1 and 2, respectively.
-[someVariable, anotherVariable] := [1, 2];
+[someVariable, anotherVariable] := [1, 2]
 
 // This code switches places between the two variables
-[someVariable, anotherVariable] = [anotherVariable, someVariable];
+[someVariable, anotherVariable] = [anotherVariable, someVariable]
 	  </pre>
 
 	  <p>
@@ -740,18 +720,17 @@ print(myList.find(value){ value &lt; 6 }
 	    Back in section 3, when we first mentioned the each method, we used the following code snippet:
 	  </p>
 	  <pre class="anna-code">
-    (0..10).each(index)
-    {
-        print("This is number", index+1);
+    (0..10).each(index) {
+        print("This is number", index+1)
     }
 	  </pre>
 	  <p>
 	    What exactly is the <code>0..10</code> part? The answer is that it is a Range. Ranges, like lists and strings, are a collection, and ranges support map, each, filter and all the other collection iteration methods. A Range is a collection of equally spaced integers. Here are some more examples of Range objects:
 	  </p>
 	  <pre>
-anna&gt; 0..5; 
+anna&gt; 0..5 
 [0, 1, 2, 3, 4}
-anna&gt; 5..0;
+anna&gt; 5..0
 [5 ,4 ,3 ,2 ,1]
 anna&gt; 0..10|3 
 [0, 3, 6, 9]
@@ -781,21 +760,18 @@ anna&gt; 5|2...
               <h3>Sieve of Eratosthenes</h3>
 	      <pre class="anna-code">
 
-def main()
-{
-    end :== 1000; // The number of items to check
-    sieve :== [];
-    count := 0;
+def main() {
+    end :== 1000 // The number of items to check
+    sieve :== []
+    count := 0
 
-    (2..end).each(i)
-    {
-        if(sieve[i] != 1)
-        {
+    (2..end).each(i) {
+        if(sieve[i] != 1) {
 	    ((2*i)..end|i).each(j){ sieve[j] = 1 }
-            count++;
+            count++
         }
     }
-    print("There are", count, "prime numbers under", end);
+    print("There are", count, "prime numbers under", end)
 }
 	      </pre>
 	    </div>
@@ -810,16 +786,15 @@ def main()
 	  </p>
 	  <pre class="anna-code">
 // Print all elements of the Fibonacci sequence up to the secified number
-def fibonacci(Int end){ 
-    [first, second] := [0, 1];
-    while(first <= end)
-    {
-        print(first, end: " ");
-        [first, second] = [second, first+second];
+def fibonacci(Int end) { 
+    [first, second] := [0, 1]
+    while(first <= end) {
+        print(first, end: " ")
+        [first, second] = [second, first+second]
     }
-    print();
+    print()
 }
-fibonacci(100); // Prints «0 1 1 2 3 5 8 13 21 34 55 89»
+fibonacci(100) // Prints «0 1 1 2 3 5 8 13 21 34 55 89»
 	  </pre>
 	  <p>
 	    The first new thing in the above function is the argument
@@ -833,7 +808,7 @@ fibonacci(100); // Prints «0 1 1 2 3 5 8 13 21 34 55 89»
 	    like function arguments, variables are type checked:
 	  </p>
 	  <pre>
-anna &gt; myVariable := 1+2;
+anna &gt; myVariable := 1+2
 3
 anna &gt; myVariable = "Hello"
 Error in file «<internal>», on line 1:
@@ -999,16 +974,14 @@ Error: Found 1 error(s) during module loading
 	      </p>
 
 	      <pre class="anna-code">
-def lower(String in)
-{
+def lower(String in) {
     "".join(in.map(chr){chr.lower})
 }
 
-def lower(String in)
-{
-    result := "";
+def lower(String in) {
+    result := ""
     in.each(ch){ result ~= chr.lower }
-    return result;
+    return result
 }
 	      </pre>
 	    </div>
@@ -1023,25 +996,20 @@ def lower(String in)
 	    allow. For example:
 	  </p>
 	  <pre class="anna-code">
-def askOk(String prompt, Int retries=4, String complaint="Answer yes or no, please!")
-{
-    while(1)
-    {
-        ok :== readLine.readLine(prompt);
-        if(ok in ["y", "ye", "yes"])
-        {
-            return 1;
+def askOk(String prompt, Int retries=4, String complaint="Answer yes or no, please!") {
+    while(1) {
+        ok :== readLine.readLine(prompt)
+        if(ok in ["y", "ye", "yes"]) {
+            return 1
         }
-        if(ok in ["n", "no", "nop", "nope"])
-        {
-            return ?;
+        if(ok in ["n", "no", "nop", "nope"]) {
+            return ?
         }
-        retries = retries - 1;
-        if(retries &lt; 0)
-	{
-            raise(error.Error("Uncooperative user"));
+        retries = retries - 1
+        if(retries &lt; 0) {
+            raise(error.Error("Uncooperative user"))
         }
-        print(complaint);
+        print(complaint)
     }
 }
 	  </pre>
@@ -1073,7 +1041,7 @@ def askOk(String prompt, Int retries=4, String complaint="Answer yes or no, plea
 	  <p>
 	    The
 	    line <code class='anna-code'>raise(error.Error("Uncooperative
-	    user"));</code> raises an error condition. How to deal
+	    user"))</code> raises an error condition. How to deal
 	    with error conditions will be explained
 	    in <a href="#errors">Lesson 16: Error handing</a>.
 	  </p>
@@ -1085,19 +1053,19 @@ def askOk(String prompt, Int retries=4, String complaint="Answer yes or no, plea
 	    any of the following ways:
 	  </p>
 	  <pre class="anna-code">
-askOk("Do you want to quit?");
-askOk(prompt: "Do you want to quit?");
-askOk(prompt: "Do you want to quit?", complaint: "What do you mean? Answer yes or no, please!");
-askOk("Do you want to quit?", retries: 1);
-askOk(retries: 1, "Quit?");
+askOk("Do you want to quit?")
+askOk(prompt: "Do you want to quit?")
+askOk(prompt: "Do you want to quit?", complaint: "What do you mean? Answer yes or no, please!")
+askOk("Do you want to quit?", retries: 1)
+askOk(retries: 1, "Quit?")
 	  </pre>
 	  <p>
 	    But none of the following are valid:
 	  </p>
 	  <pre class="anna-code">
-askOk();                       // Required argument missing
-askOk(greeting: "Hello");      // Unknown keyword argument
-askOk("Quit?", retries: 2.0);  // Wrong type on argument «retries»
+askOk()                       // Required argument missing
+askOk(greeting: "Hello")      // Unknown keyword argument
+askOk("Quit?", retries: 2.0)  // Wrong type on argument «retries»
 	  </pre>
 	  <p>
 	    Keyword arguments and non-keyword arguments can be given
@@ -1133,20 +1101,17 @@ askOk("Quit?", retries: 2.0);  // Wrong type on argument «retries»
 	    arguments may occur.
 	  </p>
 	  <pre class="anna-code">
-def writeMultipleItems(io.File file, String separator, Object args...)
-{
-    file.writeFile(separator.join(args));
+def writeMultipleItems(io.File file, String separator, Object args...) {
+    file.writeFile(separator.join(args))
 }
 	  </pre>
 	  <p>
 	    In the same fashion, dictionaries can deliver keyword arguments with the <code>:</code> operator:
 	  </p>
 	  <pre class="anna-code">
-def writeMapping(Object arbitraryMapping:)
-{
-    arbitraryMapping.each(key, value)
-    {
-        print(key, "=&gt;", value);
+def writeMapping(Object arbitraryMapping:) {
+    arbitraryMapping.each(key, value) {
+        print(key, "=&gt;", value)
     }
 }
 
@@ -1158,7 +1123,7 @@ bar => Hello
 baz => [0, 1, 2, 3, 4]
 
 */
-writeMapping(foo: 1, bar: "Hello", baz: 0..5);
+writeMapping(foo: 1, bar: "Hello", baz: 0..5)
 
 	  </pre>
 	  <p>
@@ -1191,8 +1156,7 @@ anna&gt; print(1,2,3, sep:"a", end:"b")
 	    the <code>def</code> keyword and the function name:
 	  </p>
 	  <pre class="anna-code">
-def Int factorial(Int in)
-{
+def Int factorial(Int in) {
     return if(in < 2){1} else {in * factorial(in-1)}    
 }
 	  </pre>	  
@@ -1203,9 +1167,8 @@ def Int factorial(Int in)
 	    tutorial without any real explanation. We've seen code like this:
 	  </p>
 	  <pre class="anna-code">
-if(someCondition)
-{
-    print("Condition was met.");
+if(someCondition) {
+    print("Condition was met.")
 }
 	  </pre>
 	  <p>
@@ -1216,12 +1179,12 @@ if(someCondition)
 	  <pre class="anna-code">
 /* This defines the myBlock variable to point to the specified block of code */
 myBlock := {
-    print("Execute the block.");
+    print("Execute the block.")
 }
 
 /* Execute the myBlock block twice */
-myBlock();
-myBlock();
+myBlock()
+myBlock()
 	  </pre>
 	  <p>
 	    As you can see, a block can be used exactly like any other function. So what are the differences?
@@ -1244,9 +1207,8 @@ myBlock();
 	  </p>
 	  <pre class="anna-code">
 /* This defines the myBlock variable to point to the specified block of code */
-def myBlockFun() (block)
-{
-    print("Execute the block.");
+def myBlockFun() (block) {
+    print("Execute the block.")
 }
 	  </pre>
 	  <p>
@@ -1256,18 +1218,16 @@ def myBlockFun() (block)
 	  </p>
 	  <pre class="anna-code">
 // Give the following function
-def myIf(Object condition, Block block)
-{
+def myIf(Object condition, Block block) {
     if(condition){block()}
 }
 
 // The following two expressions are completely equivalent:
 
-myIf(1+1 == 2, {print("Math is fun")});
+myIf(1+1 == 2, {print("Math is fun")})
 
-myIf(1+1 == 2)
-{
-    print("Math is fun");
+myIf(1+1 == 2) {
+    print("Math is fun")
 }
 	  </pre>
 
@@ -1294,8 +1254,7 @@ myIf(1+1 == 2)
               <span class='anna-code-popup-close'>X</span>
               <h3>Even numbers</h3>
 	      <pre class="anna-code">
-def evenHalf(Int number...)
-{
+def evenHalf(Int number...) {
     number.filter(num){num.mod(2)==0}.map(num){num/2}
 }
 	      </pre>
@@ -1322,13 +1281,13 @@ def evenHalf(Int number...)
 	  </p>
 	  <pre class="anna-code">
 // Create a new HashMap with the specified mappings
-nickMap := ["Dick": "Richard", "Ronnie": "Ronald", "Frannie": "Francine"];
+nickMap := ["Dick": "Richard", "Ronnie": "Ronald", "Frannie": "Francine"]
 
 // Add another mapping
-nickMap["Eddie"] = "Edward";
+nickMap["Eddie"] = "Edward"
 
 // Get a mapping value of the key "Ronnie" and print it
-print(nickMap["Ronnie"]);
+print(nickMap["Ronnie"])
 
 /*
   When declaring an empty HashMap, we have to specifically tell Anna what the key
@@ -1398,34 +1357,28 @@ myMap := «Char, List«Int»»[]
               <h3>Word counter</h3>
 	      <pre class="anna-code">
 /* A simple and straightforward solution */
-def wordCount(String input)
-{
-    wordList :== input.split(charList:" .,?!", allowEmpty:?);
-    res :== «String, Int»[];
-    wordList.each(word)
-    {
-        if(word in res)
-        {
-            res[word]++;
-        }
-        else
-        {
-            res[word] = 1;
+def wordCount(String input) {
+    wordList :== input.split(charList:" .,?!", allowEmpty:?)
+    res :== «String, Int»[]
+    wordList.each(word) {
+        if(word in res) {
+            res[word]++
+        } else {
+            res[word] = 1
         }
     }
-    print(res);
+    print(res)
 }
 
 /* 
   Alternative version, uses the default value of HashMap.
   Also demonstrates a slightly terser coding style.
 */
-def wordCount(String input)
-{
-    res :== «String, Int»[];
-    res.default = 0;
+def wordCount(String input) {
+    res :== «String, Int»[]
+    res.default = 0
     input.split(" .,?!", ?).each(word){ res[word]++ }
-    print(res);
+    print(res)
 }
 	      </pre>
 	    </div>
