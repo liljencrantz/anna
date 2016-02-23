@@ -178,7 +178,7 @@ test: bin/anna
 
 clean:
 	rm -f src/*.o src/*.d src/*/*.o src/*/*/*.d src/*/*/*.o src/*/*.d autogen/*.o autogen/*.c autogen/*.h autogen/*.d autogen/*.output *.gcov *.gcda *.gcno bin/anna gmon.out lib/*.so lib/*.o lib/*.d lib/*.o documentation/index.html $(ANNA_EXTERNAL_BINDINGS:.so=.c)
-	-rm -r documentation/api
+	-rm -rf documentation/api
 .PHONY: clean
 
 # Syntax check support for flymake
