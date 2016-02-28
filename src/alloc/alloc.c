@@ -130,7 +130,12 @@ void anna_alloc_init_thread()
     pthread_mutex_lock(&anna_alloc_mutex_gc);
     anna_alloc_t *alloc = calloc(sizeof(anna_alloc_t), 1);
     alloc->idx = al_get_count(&anna_alloc_alloc);
-    pthread_setspecific(anna_alloc_key, alloc);
+    int err = pthread_setspecific(anna_alloc_key, alloc);
+    if (err)
+    {
+        anna_message(L"Failed to attach allocator to thread\n");
+        CRASH;
+    }
 
     al_push(&anna_alloc_alloc, alloc);
 //    anna_alloc_work_count_tot++;
@@ -222,7 +227,13 @@ void anna_alloc_destroy_thread()
 
 void anna_gc_init()
 {
-    pthread_key_create(&anna_alloc_key, &free);
+    int err = pthread_key_create(&anna_alloc_key, &free);
+    if (err)
+    {
+        anna_message(L"Failed to initialize GC\n");
+        CRASH;
+    }
+
     anna_alloc_init_thread();
     anna_alloc_work_count_tot++;
     anna_alloc_work_count++;
