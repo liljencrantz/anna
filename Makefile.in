@@ -67,10 +67,12 @@ ANNA_EXTERNAL_BINDINGS := lib/curses.so lib/math.so lib/cmath.so
 all: $(PROGRAMS) bindings documentation
 .PHONY: all
 
-bindings: $(ANNA_EXTERNAL_BINDINGS) 
+bindings: bootstrap_internal_bindings $(ANNA_EXTERNAL_BINDINGS)
 .PHONY: bindings
 
-internal_bindings:
+bootstrap_internal_bindings: | $(ANNA_INTERNAL_BINDINGS)
+
+internal_bindings: $(ANNA_INTERNAL_BINDINGS)
 	for i in internalBindings/*.bind; do $(ANNABIND) $$i > lib/$$(basename $$i .bind).c; done
 .PHONY: internal_bindings
 
