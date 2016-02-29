@@ -51,6 +51,7 @@ int anna_alloc_count=0;
 int anna_alloc_count_next_gc=1024*1024;
 int anna_alloc_gc_block_counter;
 int anna_alloc_run_finalizers=1;
+pthread_key_t anna_alloc_key;
 array_list_t anna_alloc_todo = AL_STATIC;
 array_list_t anna_alloc_permanent = AL_STATIC;
 pthread_t anna_alloc_gc_thread;

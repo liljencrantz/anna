@@ -1,6 +1,7 @@
 #ifndef ANNA_ALLOC_H
 #define ANNA_ALLOC_H
 
+#include <assert.h>
 #include <pthread.h>
 
 #include "anna/util.h"
@@ -8,7 +9,7 @@
 #include "anna/node.h"
 #include "anna/slab.h"
 
-static pthread_key_t anna_alloc_key;
+extern pthread_key_t anna_alloc_key;
 extern array_list_t anna_alloc_todo;
 
 typedef struct
@@ -29,7 +30,9 @@ typedef struct
 
 static inline anna_alloc_t *anna_alloc_data()
 {
-    return (anna_alloc_t *)pthread_getspecific(anna_alloc_key);
+    void *data = pthread_getspecific(anna_alloc_key);
+    assert(data);
+    return (anna_alloc_t *) data;
 }
 
 /*
