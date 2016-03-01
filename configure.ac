@@ -392,6 +392,21 @@ AC_CHECK_DECLS([clog10], [], [], [[#include <complex.h>]])
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
 
+AC_CHECK_LIB([intl], [libintl_dcgettext], [have_libintl=yes], [have_libintl=no])
+if test x$have_libintl = xyes; then
+   LDFLAGS="$LDFLAGS -lintl"
+fi
+
+AC_CHECK_LIB([iconv], [iconv_open], [have_libiconv=yes], [have_libiconv=no])
+if test x$have_libiconv = xyes; then
+   LDFLAGS="$LDFLAGS -liconv"
+fi
+
+AC_CHECK_LIB([execinfo], [backtrace], [have_libexecinfo=yes], [have_libexecinfo=no])
+if test x$have_libexecinfo = xyes; then
+   LDFLAGS="$LDFLAGS -lexecinfo"
+fi
+
 
 echo "anna is now configured."
 echo "Use 'make' and 'make install' to build and install."
