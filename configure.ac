@@ -389,10 +389,6 @@ AC_CHECK_DECLS([clog], [], [], [[#include <complex.h>]])
 AC_CHECK_DECLS([clog10], [], [], [[#include <complex.h>]])
 AC_CHECK_DECLS([fdatasync], [], [], [[#include <unistd.h>]])
 
-# Tell the world what we know
-AC_CONFIG_FILES([Makefile])
-AC_OUTPUT
-
 AC_CHECK_LIB([intl], [libintl_dcgettext], [have_libintl=yes], [have_libintl=no])
 if test x$have_libintl = xyes; then
    LDFLAGS="$LDFLAGS -lintl"
@@ -408,6 +404,9 @@ if test x$have_libexecinfo = xyes; then
    LDFLAGS="$LDFLAGS -lexecinfo"
 fi
 
+# Tell the world what we know
+AC_CONFIG_FILES([Makefile])
+AC_OUTPUT
 
 echo "anna is now configured."
 echo "Use 'make' and 'make install' to build and install."

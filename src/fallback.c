@@ -78,7 +78,7 @@ wchar_t *wcschr(const wchar_t *wcs, wchar_t wc)
     while(*wcs)
     {
 	if (*wcs == wc)
-	    return wcs;
+	    return (wchar_t*)wcs;
 	wcs++;
     }
     return 0;
@@ -92,7 +92,7 @@ wchar_t *wcsrchr(const wchar_t *wcs, wchar_t wc)
     while(*wcs)
     {
 	if (*wcs == wc)
-	    res = wcs;
+	    res = (wchar_t*)wcs;
 	wcs++;
     }
     return res;

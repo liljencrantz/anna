@@ -335,7 +335,7 @@ ANNA_VM_NATIVE(anna_string_i_set_range, 3)
 	    step=1;
 	}
 	
-	if(abs(step) != 1)
+	if(labs(step) != 1)
 	{
 	    return null_entry;
 	}
@@ -360,7 +360,7 @@ ANNA_VM_NATIVE(anna_string_i_set_range, 3)
 	memmove(
 	    &this->str[mini(from,to)+count_replacement], 
 	    &this->str[mini(from,to)+count], 
-	    sizeof(wchar_t)*abs(old_size - mini(from,to) - count ));
+	    sizeof(wchar_t)*labs(old_size - mini(from,to) - count ));
 
 	/* Copy in the new data */
 	int offset = (step > 0) ? (from) : (from+count_replacement-count);

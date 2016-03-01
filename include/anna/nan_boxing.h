@@ -51,7 +51,7 @@ static inline int anna_is_int_small(anna_entry_t val)
 
 static inline anna_entry_t anna_from_int(long val)
 {
-    if(abs(val) < ANNA_INT_FAST_MAX)
+    if(labs(val) < ANNA_INT_FAST_MAX)
     {
 	anna_entry_t res;
 	res.i0 = ANNA_ENTRY_INT<<16;

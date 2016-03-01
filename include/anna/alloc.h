@@ -237,4 +237,7 @@ __cold void anna_alloc_mark_permanent(void *alloc);
 void anna_alloc_unpause_worker(void);
 void anna_alloc_pause_worker(anna_context_t *context, pthread_cond_t *cond, pthread_mutex_t *mutex);
 
+void anna_alloc_print_info(void);
+void anna_alloc_destroy_main_thread(void);
+
 #endif

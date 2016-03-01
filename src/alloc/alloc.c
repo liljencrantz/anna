@@ -283,7 +283,7 @@ void anna_alloc_unpause_worker()
     pthread_mutex_unlock(&anna_alloc_mutex_gc);
 }
 
-void anna_alloc_print_info()
+void anna_alloc_print_info(void)
 {
     debug(99, L"%d kB bytes allocated\n", slab_alloc_sz/1024);
     debug(99, L"%d kB bytes allocated as slabs\n", slab_alloc_batch_sz/1024);

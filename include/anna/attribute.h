@@ -1,4 +1,4 @@
-#ifndef ANNA_ATTRIBUTEQ_H
+#ifndef ANNA_ATTRIBUTE_H
 #define ANNA_ATTRIBUTE_H
 
 #include "anna/base.h"

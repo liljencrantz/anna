@@ -68,7 +68,7 @@ void anna_alloc_mark_stack_template(anna_stack_template_t *stack)
     if(stack->parent)
 	anna_alloc_mark_stack_template(stack->parent);
     if(stack->definition)
-	anna_alloc_mark_node(stack->definition);
+	anna_alloc_mark_node((anna_node_t*) stack->definition);
     if(stack->function)
 	anna_alloc_mark_function(stack->function);
     if(stack->wrapper)

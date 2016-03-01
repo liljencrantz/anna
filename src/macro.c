@@ -479,7 +479,7 @@ ANNA_VM_MACRO(anna_macro_if)
 	anna_error((anna_node_t *)node, L"Invalid parameter count");
 	return anna_node_create_null(&node->location);
     }
-    if((node->child_count == 3))
+    if(node->child_count == 3)
     {
 	if (anna_node_is_call_to(node->child[2], L"else")) 
 	{

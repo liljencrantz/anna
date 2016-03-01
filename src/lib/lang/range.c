@@ -245,7 +245,7 @@ ANNA_VM_NATIVE(anna_range_get_range, 2)
 	    {
 		return null_entry;
 	    }
-	    idx_step = (idx_to > idx_from ? 1 : -1) * abs(idx_step);	
+	    idx_step = (idx_to > idx_from ? 1 : -1) * labs(idx_step);
 
 	    if(idx_to > to)
 	    {
