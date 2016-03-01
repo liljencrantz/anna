@@ -64,6 +64,16 @@ struct signalfd_siginfo {
 };
 #endif
 
+#ifndef HAVE_CLEARENV
+extern char *environ[];
+
+int clearenv(void);
+#endif
+
+#if HAVE_DECL_FDATASYNC == 0
+int fdatasync(int fd);
+#endif
+
 #if HAVE_DECL_CLOG == 0
 #include <complex.h>
 

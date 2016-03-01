@@ -383,10 +383,11 @@ fi
 #
 
 #AC_CHECK_FUNCS(wcsdup wcslen wcscmp wcschr wcsrchr)
-AC_CHECK_FUNCS(fputwc fgetwc wcstol prctl swprintf vswprintf)
+AC_CHECK_FUNCS(fputwc fgetwc wcstol prctl swprintf vswprintf clearenv)
 AC_CHECK_DECLS([cpow], [], [], [[#include <complex.h>]])
 AC_CHECK_DECLS([clog], [], [], [[#include <complex.h>]])
 AC_CHECK_DECLS([clog10], [], [], [[#include <complex.h>]])
+AC_CHECK_DECLS([fdatasync], [], [], [[#include <unistd.h>]])
 
 # Tell the world what we know
 AC_CONFIG_FILES([Makefile])

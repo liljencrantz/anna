@@ -253,6 +253,22 @@ double complex cpow(
 }
 #endif
 
+#ifndef HAVE_CLEARENV
+char *environ[] = {NULL};
+
+int clearenv(void)
+{
+    return 1;
+}
+#endif
+
+#if HAVE_DECL_FDATASYNC == 0
+int fdatasync(int fd)
+{
+    return fsync(fd);
+}
+#endif
+
 #if HAVE_DECL_CLOG == 0
 #include <complex.h>
 
