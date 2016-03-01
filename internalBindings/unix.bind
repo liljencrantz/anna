@@ -11,10 +11,11 @@
  */
 
 include(
+    "\"anna/fallback.h\"",
     "<sys/types.h>", "<sys/stat.h>", "<unistd.h>", "<fcntl.h>",
     "<sys/time.h>", "<sys/resource.h>", "<signal.h>", "<sys/wait.h>", 
     "<grp.h>", "<stdint.h>", "<poll.h>", "<sys/select.h>", "<locale.h>", 
-    "<termios.h>", "<sys/signalfd.h>",
+    "<termios.h>",
     )
 
 attribute(

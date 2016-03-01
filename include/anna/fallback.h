@@ -56,6 +56,14 @@ static inline int prctl(
 double complex cpow(double complex x, double complex z);
 #endif
 
+#ifdef HAVE_SYS_SIGNALFD_H
+#include <sys/signalfd.h>
+#else
+struct signalfd_siginfo {
+    int empty;
+};
+#endif
+
 #if HAVE_DECL_CLOG == 0
 #include <complex.h>
 

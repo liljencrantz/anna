@@ -255,7 +255,7 @@ AC_SEARCH_LIBS( yywrap, [l], , [AC_MSG_ERROR([Could not find a l library impleme
 # Check presense of various header files
 #
 
-AC_CHECK_HEADERS([getopt.h termio.h sys/resource.h term.h ncurses/term.h ncurses.h curses.h stropts.h siginfo.h sys/select.h sys/ioctl.h sys/termios.h libintl.h execinfo.h sys/prctl.h])
+AC_CHECK_HEADERS([getopt.h termio.h sys/resource.h term.h ncurses/term.h ncurses.h curses.h stropts.h siginfo.h sys/select.h sys/ioctl.h sys/termios.h libintl.h execinfo.h sys/prctl.h sys/signalfd.h])
 
 #
 # On some platforms (Solaris 10) adding -std=c99 in turn requires that
