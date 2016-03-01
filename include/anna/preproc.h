@@ -10,7 +10,9 @@
  * that the code can be laid out in an optimal manner */
 # define unlikely(x) __builtin_expect((x),0)
 /* No side effects */
+#ifndef __pure
 # define __pure		__attribute__ ((pure))
+#endif
 /* Like __pure, but stricter. Not even read-only checking of globals or pointers */
 # define __attr_const	__attribute__ ((const))
 /* Function never returns */
@@ -22,9 +24,13 @@
 /* Warn if function is used */
 # define __deprecated	__attribute__ ((deprecated))
 /* Don't warn if static function never called, still compile */
+#ifndef __used
 # define __used		__attribute__ ((used))
+#endif
 /* Ignore alignment of struct */
+#ifndef __packed
 # define __packed	__attribute__ ((packed))
+#endif
 # define __sentinel	__attribute__ ((sentinel))
 
 # define __hot	__attribute__ ((hot))

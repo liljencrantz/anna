@@ -6,6 +6,12 @@
 
 %{
 
+// required for recent bison
+#ifndef YY_TYPEDEF_YY_SCANNER_T
+#define YY_TYPEDEF_YY_SCANNER_T
+typedef void* yyscan_t;
+#endif
+
 #include "anna/config.h"
 
 #include <stdlib.h>
@@ -205,6 +211,24 @@ enum
     ANNA_LIT_HEX
 };
 
+static iconv_t utf82wcs_open(void)
+{
+    const char *wchar_names[] = {"WCHAR_T", "UCS-4", 0};
+    const char *utf8_names[] = {"UTF8", "UTF-8", 0};
+
+    for (int i = 0; wchar_names[i]; i++)
+    {
+        for (int j = 0; utf8_names[j]; j++)
+        {
+            iconv_t cd = iconv_open (wchar_names[i], utf8_names[j]);
+            if (cd != (iconv_t) -1)
+            {
+                return cd;
+            }
+        }
+    }
+    return (iconv_t) -1;
+}
 
 static wchar_t *utf82wcs(char *in)
 {
@@ -214,7 +238,7 @@ static wchar_t *utf82wcs(char *in)
     wchar_t *res = malloc(outlen);
     wchar_t *out = res;
     
-    iconv_t cd = iconv_open ("WCHAR_T", "UTF8");
+    iconv_t cd = utf82wcs_open();
     if (cd == (iconv_t) -1)
     {
 	anna_message(L"Couldn't set up character set conversion");

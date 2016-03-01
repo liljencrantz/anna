@@ -51,6 +51,7 @@ int anna_alloc_count=0;
 int anna_alloc_count_next_gc=1024*1024;
 int anna_alloc_gc_block_counter;
 int anna_alloc_run_finalizers=1;
+pthread_key_t anna_alloc_key;
 array_list_t anna_alloc_todo = AL_STATIC;
 array_list_t anna_alloc_permanent = AL_STATIC;
 pthread_t anna_alloc_gc_thread;
@@ -130,7 +131,12 @@ void anna_alloc_init_thread()
     pthread_mutex_lock(&anna_alloc_mutex_gc);
     anna_alloc_t *alloc = calloc(sizeof(anna_alloc_t), 1);
     alloc->idx = al_get_count(&anna_alloc_alloc);
-    pthread_setspecific(anna_alloc_key, alloc);
+    int err = pthread_setspecific(anna_alloc_key, alloc);
+    if (err)
+    {
+        anna_message(L"Failed to attach allocator to thread\n");
+        CRASH;
+    }
 
     al_push(&anna_alloc_alloc, alloc);
 //    anna_alloc_work_count_tot++;
@@ -222,7 +228,13 @@ void anna_alloc_destroy_thread()
 
 void anna_gc_init()
 {
-    pthread_key_create(&anna_alloc_key, &free);
+    int err = pthread_key_create(&anna_alloc_key, &free);
+    if (err)
+    {
+        anna_message(L"Failed to initialize GC\n");
+        CRASH;
+    }
+
     anna_alloc_init_thread();
     anna_alloc_work_count_tot++;
     anna_alloc_work_count++;
@@ -271,7 +283,7 @@ void anna_alloc_unpause_worker()
     pthread_mutex_unlock(&anna_alloc_mutex_gc);
 }
 
-void anna_alloc_print_info()
+void anna_alloc_print_info(void)
 {
     debug(99, L"%d kB bytes allocated\n", slab_alloc_sz/1024);
     debug(99, L"%d kB bytes allocated as slabs\n", slab_alloc_batch_sz/1024);

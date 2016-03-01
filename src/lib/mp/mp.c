@@ -113,9 +113,6 @@ ANNA_VM_NATIVE(anna_mp_run, 1)
     return anna_from_obj(schan);
 }
 
-void anna_alloc_destroy_main_thread(void);
-
-
 void anna_mp_join()
 {
     anna_alloc_destroy_main_thread();

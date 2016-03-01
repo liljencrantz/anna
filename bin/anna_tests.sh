@@ -1,4 +1,4 @@
-#! /bin/bash 
+#! /usr/bin/env bash
 
 # Runs all unit/regression tests in the tests/ directory, and checks
 # their output and exit status. For every .anna file in tests/, if

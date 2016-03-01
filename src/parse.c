@@ -15,6 +15,12 @@
 #include "anna/node_create.h"
 #include "anna/parse.h"
 
+// required for recent bison
+#ifndef YY_TYPEDEF_YY_SCANNER_T
+#define YY_TYPEDEF_YY_SCANNER_T
+typedef void* yyscan_t;
+#endif
+
 #include "autogen/yacc.h"
 #include "autogen/lex.h"
 

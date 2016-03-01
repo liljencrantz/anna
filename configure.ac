@@ -255,7 +255,7 @@ AC_SEARCH_LIBS( yywrap, [l], , [AC_MSG_ERROR([Could not find a l library impleme
 # Check presense of various header files
 #
 
-AC_CHECK_HEADERS([getopt.h termio.h sys/resource.h term.h ncurses/term.h ncurses.h curses.h stropts.h siginfo.h sys/select.h sys/ioctl.h sys/termios.h libintl.h execinfo.h sys/prctl.h])
+AC_CHECK_HEADERS([getopt.h termio.h sys/resource.h term.h ncurses/term.h ncurses.h curses.h stropts.h siginfo.h sys/select.h sys/ioctl.h sys/termios.h libintl.h execinfo.h sys/prctl.h sys/signalfd.h])
 
 #
 # On some platforms (Solaris 10) adding -std=c99 in turn requires that
@@ -383,13 +383,30 @@ fi
 #
 
 #AC_CHECK_FUNCS(wcsdup wcslen wcscmp wcschr wcsrchr)
-AC_CHECK_FUNCS(fputwc fgetwc wcstol prctl swprintf vswprintf)
+AC_CHECK_FUNCS(fputwc fgetwc wcstol prctl swprintf vswprintf clearenv)
+AC_CHECK_DECLS([cpow], [], [], [[#include <complex.h>]])
+AC_CHECK_DECLS([clog], [], [], [[#include <complex.h>]])
+AC_CHECK_DECLS([clog10], [], [], [[#include <complex.h>]])
+AC_CHECK_DECLS([fdatasync], [], [], [[#include <unistd.h>]])
 
+AC_CHECK_LIB([intl], [libintl_dcgettext], [have_libintl=yes], [have_libintl=no])
+if test x$have_libintl = xyes; then
+   LDFLAGS="$LDFLAGS -lintl"
+fi
+
+AC_CHECK_LIB([iconv], [iconv_open], [have_libiconv=yes], [have_libiconv=no])
+if test x$have_libiconv = xyes; then
+   LDFLAGS="$LDFLAGS -liconv"
+fi
+
+AC_CHECK_LIB([execinfo], [backtrace], [have_libexecinfo=yes], [have_libexecinfo=no])
+if test x$have_libexecinfo = xyes; then
+   LDFLAGS="$LDFLAGS -lexecinfo"
+fi
 
 # Tell the world what we know
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
-
 
 echo "anna is now configured."
 echo "Use 'make' and 'make install' to build and install."

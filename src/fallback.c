@@ -78,7 +78,7 @@ wchar_t *wcschr(const wchar_t *wcs, wchar_t wc)
     while(*wcs)
     {
 	if (*wcs == wc)
-	    return wcs;
+	    return (wchar_t*)wcs;
 	wcs++;
     }
     return 0;
@@ -92,7 +92,7 @@ wchar_t *wcsrchr(const wchar_t *wcs, wchar_t wc)
     while(*wcs)
     {
 	if (*wcs == wc)
-	    res = wcs;
+	    res = (wchar_t*)wcs;
 	wcs++;
     }
     return res;
@@ -228,10 +228,64 @@ long wcstol(
 }
 #endif
 
-#ifndef HAVE_PRCTL
-static inline int prctl(
-    int option, unsigned long arg2, unsigned long arg3,
-    unsigned long arg4, unsigned long arg5)
+#if HAVE_DECL_CPOW == 0
+#include <math.h>
+
+double complex cpow(
+    double complex a,
+    double complex z)
 {
+    double x = creal (z);
+    double y = cimag (z);
+    double absa = cabs (a);
+    if (absa == 0.0) {
+        return (0.0 + 0.0 * I);
+    }
+    double arga = carg (a);
+    double r = pow (absa, x);
+    double theta = x * arga;
+    if (y != 0.0) {
+        r = r * exp (-y * arga);
+        theta = theta + y * log (absa);
+    }
+
+    return r * cos (theta) + (r * sin (theta)) * I;
+}
+#endif
+
+#ifndef HAVE_CLEARENV
+char *environ[] = {NULL};
+
+int clearenv(void)
+{
+    return 1;
+}
+#endif
+
+#if HAVE_DECL_FDATASYNC == 0
+int fdatasync(int fd)
+{
+    return fsync(fd);
+}
+#endif
+
+#if HAVE_DECL_CLOG == 0
+#include <complex.h>
+
+double complex clog(double complex z)
+{
+    double rr = cabs(z);
+    double p = log(rr);
+    rr = atan2(cimag(z), creal(z));
+    return p + rr * I;
+}
+#endif
+
+#if HAVE_DECL_CLOG10 == 0
+#include <complex.h>
+
+double complex clog10(double complex z)
+{
+    return 0;
 }
 #endif
